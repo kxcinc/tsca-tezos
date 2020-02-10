@@ -67,7 +67,7 @@ let commands () =
         >>= fun () ->
         cctxt#message "  %a" P2p_stat.pp stat
         >>= fun () ->
-        cctxt#message "CONNECTIONS"
+        cctxt#message "CONNECTIONS (total: %d)" (List.length conns)
         >>= fun () ->
         let (incoming, outgoing) =
           List.partition (fun c -> c.P2p_connection.Info.incoming) conns
@@ -80,7 +80,7 @@ let commands () =
           (fun conn -> cctxt#message "  %a" pp_connection_info conn)
           outgoing
         >>= fun () ->
-        cctxt#message "KNOWN PEERS"
+        cctxt#message "KNOWN PEERS (total: %d)" (List.length peers)
         >>= fun () ->
         Lwt_list.iter_s
           (fun (p, pi) ->
@@ -96,7 +96,7 @@ let commands () =
               (if pi.trusted then "★" else " "))
           peers
         >>= fun () ->
-        cctxt#message "KNOWN POINTS"
+        cctxt#message "KNOWN POINTS (total: %d)" (List.length points)
         >>= fun () ->
         Lwt_list.iter_s
           (fun (p, pi) ->

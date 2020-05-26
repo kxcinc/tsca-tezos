@@ -743,6 +743,18 @@ let parse_config_args (ctx : #Client_context.full) argv =
       | None ->
           return (None, node_addr, node_port, tls) ) )
   >>=? fun (_endpoint, _addr, _port, _tls) ->
+  (* give a kind warning when any of -A -P -S exists *)
+  (let got = function Some _ -> true | None -> false in
+   let gotany =
+     got node_addr || got node_port || got tls || got cfg.node_addr
+     || got cfg.node_port || got cfg.tls
+   in
+   if gotany then (
+     Format.(
+       eprintf
+         "@{<warning>Warning:@}  the --addr --port --tls options are now \
+          deprecated; use --endpoint instead\n" ;
+       pp_print_flush err_formatter ()) )) ;
   Tezos_signer_backends_unix.Remote.read_base_uri_from_env ()
   >>=? fun remote_signer_env ->
   let remote_signer =

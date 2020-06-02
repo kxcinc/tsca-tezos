@@ -79,23 +79,26 @@ class Client:
             assert base_dir
         self.base_dir = base_dir
 
+        endpoint_scheme = "http://"
+        if use_tls:
+            endpoint_scheme = "https://"
+
         client = [client_path]
         if mode is None or mode == "client":
             client.extend(['-base-dir', base_dir,
-                           '-addr', host,
-                           '-port', str(rpc_port)])
+                           '-endpoint',
+                           endpoint_scheme + host
+                           + ":" + str(rpc_port)])
         elif mode == "mockup":
             client.extend(['-mode', mode])
         else:
             msg = f"Unexpected mode: {mode}." + \
                   "Expected one of 'client' or 'mockup'."
             assert False, msg
-        admin_client = [admin_client_path, '-base-dir', base_dir, '-addr',
-                        host, '-port', str(rpc_port)]
-
-        if use_tls:
-            client.append('-S')
-            admin_client.append('-S')
+        admin_client = [admin_client_path, '-base-dir', base_dir,
+                        '-endpoint',
+                        endpoint_scheme + host
+                        + ":" + str(rpc_port)]
 
         self._client = client
         self._admin_client = admin_client

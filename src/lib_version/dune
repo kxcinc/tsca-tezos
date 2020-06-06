@@ -8,4 +8,10 @@
  (targets generated_git_info.ml)
  ; Ensures the hash update whenever a source file is modified ;
  (deps (source_tree %{workspace_root}) (:script get-git-info.mlt))
- (action (with-stdout-to %{targets} (run %{ocaml} unix.cma %{script}))))
+ (action
+  (with-stdout-to %{targets}
+   (progn
+    ; remove first the sometimes copied submodule .git file
+    ; that may cause problem
+    (bash "cd %{workspace_root} && [[ -f .git ]] && rm -f .git ||:")
+    (run %{ocaml} unix.cma %{script})))))
